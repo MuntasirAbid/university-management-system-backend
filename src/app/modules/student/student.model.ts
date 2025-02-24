@@ -7,6 +7,8 @@ import {
   StudentModel,
   TUserName,
 } from "./student.interface";
+import bcrypt from "bcrypt";
+import config from "../../config";
 
 const UserNameSchema = new Schema<TUserName>({
   firstName: {
@@ -83,7 +85,12 @@ const LocalGuardianSchema = new Schema<TLocalGuardian>({
 });
 
 const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-  id: { type: String },
+  id: { type: String, required: [true, "ID is required"], unique: true },
+  password: {
+    type: String,
+    required: [true, "Password is required"],
+    maxlength: [20, "Password cannot be more than 20 character"],
+  },
   name: {
     type: UserNameSchema,
     required: true,
@@ -122,6 +129,26 @@ const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
   },
 });
 
+//pre save middleware/hook : will work on save() create()
+StudentSchema.pre("save", async function (next) {
+  // console.log(this, "pre hook: we will save the data");
+  const user = this;
+  //hashing password and saving to DB
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcrypt_salt_round)
+  );
+  next();
+});
+
+//post save middleware/ hook
+StudentSchema.post("save", function (doc, next) {
+  doc.password = "";
+
+  next();
+});
+
+//for creating custom interface method
 StudentSchema.methods.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
 
