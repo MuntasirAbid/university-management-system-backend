@@ -84,53 +84,65 @@ const LocalGuardianSchema = new Schema<TLocalGuardian>({
   },
 });
 
-const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-  id: { type: String, required: [true, "ID is required"], unique: true },
-  password: {
-    type: String,
-    required: [true, "Password is required"],
-    maxlength: [20, "Password cannot be more than 20 character"],
+const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
+  {
+    id: { type: String, required: [true, "ID is required"], unique: true },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      maxlength: [20, "Password cannot be more than 20 character"],
+    },
+    name: {
+      type: UserNameSchema,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: true,
+      message:
+        "The gender field can only be one of the following 'male','female','other'",
+    },
+    dateOfBirth: { type: String },
+    email: { type: String, required: true, unique: true },
+    contactNo: { type: String, required: true },
+    emergencyContactNo: { type: String, required: true },
+    bloodGroup: {
+      type: String,
+      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
+      message: "{VALUE} is not valid",
+    },
+    presentAddress: { type: String, required: true },
+    permanentAddress: { type: String, required: true },
+    guardian: {
+      type: GuardianSchema,
+      required: true,
+    },
+    localGuardian: {
+      type: LocalGuardianSchema,
+      required: true,
+    },
+    profileImage: { type: String },
+    isActive: {
+      type: String,
+      enum: ["active", "blocked"],
+      default: "active",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  name: {
-    type: UserNameSchema,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: ["male", "female", "other"],
-    required: true,
-    message:
-      "The gender field can only be one of the following 'male','female','other'",
-  },
-  dateOfBirth: { type: String },
-  email: { type: String, required: true, unique: true },
-  contactNo: { type: String, required: true },
-  emergencyContactNo: { type: String, required: true },
-  bloodGroup: {
-    type: String,
-    enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    message: "{VALUE} is not valid",
-  },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: {
-    type: GuardianSchema,
-    required: true,
-  },
-  localGuardian: {
-    type: LocalGuardianSchema,
-    required: true,
-  },
-  profileImage: { type: String },
-  isActive: {
-    type: String,
-    enum: ["active", "blocked"],
-    default: "active",
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  }
+);
+
+//virtual
+StudentSchema.virtual("fullName").get(function () {
+  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
 });
 
 //pre save middleware/hook : will work on save() create()
