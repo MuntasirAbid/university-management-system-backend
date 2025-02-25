@@ -7,8 +7,6 @@ import {
   StudentModel,
   TUserName,
 } from "./student.interface";
-import bcrypt from "bcrypt";
-import config from "../../config";
 
 const UserNameSchema = new Schema<TUserName>({
   firstName: {
@@ -93,11 +91,6 @@ const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
       unique: true,
       ref: "User",
     },
-    password: {
-      type: String,
-      required: [true, "Password is required"],
-      maxlength: [20, "Password cannot be more than 20 character"],
-    },
     name: {
       type: UserNameSchema,
       required: true,
@@ -143,31 +136,14 @@ const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
 
 //virtual
 StudentSchema.virtual("fullName").get(function () {
-  return `${this.name.firstName} ${this.name.middleName} ${this.name.lastName}`;
-});
-
-//pre save middleware/hook : will work on save() create()
-StudentSchema.pre("save", async function (next) {
-  // console.log(this, "pre hook: we will save the data");
-  const user = this;
-  //hashing password and saving to DB
-  user.password = await bcrypt.hash(
-    user.password,
-    Number(config.bcrypt_salt_round)
-  );
-  next();
-});
-
-//post save middleware/ hook
-StudentSchema.post("save", function (doc, next) {
-  doc.password = "";
-
-  next();
+  return [this.name.firstName, this.name.middleName, this.name.lastName]
+    .filter(Boolean) // Removes undefined values
+    .join(" ");
 });
 
 //query middleware
 StudentSchema.pre("findOne", function (next) {
-  this.find({ isDeleted: { $ne: true } });
+  this.setQuery({ isDeleted: { $ne: true } });
   next();
 });
 StudentSchema.pre("aggregate", function (next) {
@@ -175,8 +151,8 @@ StudentSchema.pre("aggregate", function (next) {
   next();
 });
 
-//for creating custom interface method
-StudentSchema.methods.isUserExists = async function (id: string) {
+//for creating custom static method
+StudentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
 
   return existingUser;
