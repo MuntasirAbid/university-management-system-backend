@@ -102,7 +102,7 @@ const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
       message:
         "The gender field can only be one of the following 'male','female','other'",
     },
-    dateOfBirth: { type: String },
+    dateOfBirth: { type: Date },
     email: { type: String, required: true, unique: true },
     contactNo: { type: String, required: true },
     emergencyContactNo: { type: String, required: true },
