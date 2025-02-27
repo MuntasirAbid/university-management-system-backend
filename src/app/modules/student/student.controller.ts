@@ -1,14 +1,8 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { StudentServices } from "./student.service";
-import StudentValidationSchema from "./student.validation";
 import sendResponse from "../../utlis/sendResponse";
 import status from "http-status";
-
-const catchAsync = (fn: RequestHandler) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch((err) => next(err));
-  };
-};
+import catchAsync from "../../utlis/catchAsync";
 
 const getAllStudents = catchAsync(async (req, res) => {
   const result = await StudentServices.getAllStudentsFromDB();
@@ -21,7 +15,7 @@ const getAllStudents = catchAsync(async (req, res) => {
   });
 });
 
-const getSingleStudent = catchAsync(async (req, res, next) => {
+const getSingleStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params;
   const result = await StudentServices.getSingleStudentFromDB(studentId);
 
@@ -32,21 +26,18 @@ const getSingleStudent = catchAsync(async (req, res, next) => {
     data: result,
   });
 });
-const deleteStudent: RequestHandler = async (req, res, next) => {
-  try {
-    const { studentId } = req.params;
-    const result = await StudentServices.deleteStudentFromDB(studentId);
 
-    sendResponse(res, {
-      statusCode: status.OK,
-      success: true,
-      message: "Student deleted successfully",
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
-};
+const deleteStudent = catchAsync(async (req, res, next) => {
+  const { studentId } = req.params;
+  const result = await StudentServices.deleteStudentFromDB(studentId);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Student deleted successfully",
+    data: result,
+  });
+});
 
 export const StudentControllers = {
   getAllStudents,
