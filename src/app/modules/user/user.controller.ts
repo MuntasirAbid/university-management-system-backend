@@ -1,4 +1,3 @@
-import { NextFunction, Request, RequestHandler, Response } from "express";
 import { userServices } from "./user.service";
 import sendResponse from "../../utlis/sendResponse";
 import status from "http-status";
