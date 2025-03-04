@@ -1,4 +1,5 @@
 import config from "../../config";
+import AppError from "../../errors/AppError";
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
 import { academicSemesterModel } from "../academicSemester/academicSemester.model";
 import { TStudent } from "../student/student.interface";
@@ -24,7 +25,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
 
   // Check if semester exists
   if (!admissionSemester) {
-    throw new Error("Invalid admission semester provided");
+    throw new AppError(404, "Invalid admission semester provided");
   }
 
   //set generated id
