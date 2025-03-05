@@ -18,7 +18,9 @@ const getAllStudentsFromDB = async () => {
 };
 
 const getSingleStudentFromDB = async (id: string) => {
-  const result = await Student.findById(id)
+  // const result = await Student.aggregate([{ $match: { id } }]);
+
+  const result = await Student.findOne({ id })
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -29,11 +31,25 @@ const getSingleStudentFromDB = async (id: string) => {
 
   return result;
 };
+const updateStudentIntoDB = async (id: string, payload: Partial<TStudent>) => {
+  // const result = await Student.aggregate([{ $match: { id } }]);
+
+  const result = await Student.findOneAndUpdate({ id }, payload);
+
+  return result;
+};
+
 const deleteStudentFromDB = async (id: string) => {
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
+
+    // Check if user exists
+    const existingUser = await User.findOne({ id });
+    if (!existingUser) {
+      throw new AppError(status.NOT_FOUND, "User does not exist");
+    }
 
     const deletedStudent = await Student.findOneAndUpdate(
       { id },
@@ -55,10 +71,12 @@ const deleteStudentFromDB = async (id: string) => {
     }
     await session.commitTransaction();
     await session.endSession();
+
     return deletedStudent;
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
+    throw error;
   }
 };
 
@@ -66,4 +84,5 @@ export const StudentServices = {
   getAllStudentsFromDB,
   getSingleStudentFromDB,
   deleteStudentFromDB,
+  updateStudentIntoDB,
 };

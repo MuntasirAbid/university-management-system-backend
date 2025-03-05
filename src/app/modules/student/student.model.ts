@@ -148,7 +148,7 @@ StudentSchema.virtual("fullName").get(function () {
 
 //query middleware
 StudentSchema.pre("findOne", function (next) {
-  this.setQuery({ isDeleted: { $ne: true } });
+  this.setQuery({ ...this.getQuery(), isDeleted: { $ne: true } }); // Preserve original query
   next();
 });
 StudentSchema.pre("aggregate", function (next) {
