@@ -151,10 +151,6 @@ StudentSchema.pre("findOne", function (next) {
   this.setQuery({ ...this.getQuery(), isDeleted: { $ne: true } }); // Preserve original query
   next();
 });
-StudentSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
-  next();
-});
 
 //for creating custom static method
 StudentSchema.statics.isUserExists = async function (id: string) {
