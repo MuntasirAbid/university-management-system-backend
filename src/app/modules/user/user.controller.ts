@@ -3,7 +3,7 @@ import sendResponse from "../../utlis/sendResponse";
 import status from "http-status";
 import catchAsync from "../../utlis/catchAsync";
 
-const createStudent = catchAsync(async (req, res) => {
+const createStudent = catchAsync(async (req, res, next) => {
   const { password, student: studentData } = req.body;
 
   const result = await userServices.createStudentIntoDB(password, studentData);
