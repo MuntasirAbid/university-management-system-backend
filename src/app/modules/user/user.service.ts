@@ -57,11 +57,6 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     await session.abortTransaction();
     await session.endSession();
     throw new Error("Failed to create student");
-    // General error fallback
-    // throw new AppError(
-    //   status.BAD_REQUEST,
-    //   (error as any).message || "Failed to create student"
-    // );
   }
 };
 
