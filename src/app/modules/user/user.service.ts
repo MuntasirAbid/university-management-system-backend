@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Error } from "mongoose";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 import { TAcademicSemester } from "../academicSemester/academicSemester.interface";
@@ -40,10 +40,6 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     //create a user (transaction -1)
     const newUser = await User.create([userData], { session });
 
-    //create a student
-    if (!newUser.length) {
-      throw new AppError(status.BAD_REQUEST, "Failed to create user");
-    }
     //set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference id
@@ -60,8 +56,12 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-
     throw new Error("Failed to create student");
+    // General error fallback
+    // throw new AppError(
+    //   status.BAD_REQUEST,
+    //   (error as any).message || "Failed to create student"
+    // );
   }
 };
 
