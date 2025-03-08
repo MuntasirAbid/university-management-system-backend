@@ -6,6 +6,10 @@ import { User } from "../user/user.model";
 import status from "http-status";
 
 const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
+  console.log("base query", query);
+
+  const queryObj = { ...query };
+
   const studentSearchableFields = ["email", "name.firstName", "presentAddress"];
   let searchTerm = "";
 
@@ -13,11 +17,19 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     searchTerm = query?.searchTerm as string;
   }
 
-  const result = await Student.find({
+  const searchQuery = Student.find({
     $or: studentSearchableFields.map((field) => ({
       [field]: { $regex: searchTerm, $options: "i" },
     })),
-  })
+  });
+
+  //Filtering
+  const excludeFields = ["searchTerm", "sort", "limit"];
+
+  excludeFields.forEach((el) => delete queryObj[el]);
+
+  let filterQuery = searchQuery
+    .find(queryObj)
     .populate("admissionSemester")
     .populate({
       path: "academicDepartment",
@@ -25,7 +37,25 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
         path: "academicFaculty",
       },
     });
-  return result;
+
+  let sort = "-createdAt";
+
+  if (query.sort) {
+    sort = query.sort as string;
+  }
+
+  filterQuery = filterQuery.sort(sort);
+
+  // ✅ Convert limit to a number (Default: 10)
+  let limit = 1; // Default value
+  if (query.limit) {
+    limit = Number(query.limit); // Ensure it's a number
+  }
+
+  // ✅ Apply limit correctly
+  filterQuery = filterQuery.limit(limit);
+
+  return await filterQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
