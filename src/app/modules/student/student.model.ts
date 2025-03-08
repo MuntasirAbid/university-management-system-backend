@@ -141,7 +141,7 @@ const StudentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
 
 //virtual
 StudentSchema.virtual("fullName").get(function () {
-  return [this.name.firstName, this.name.middleName, this.name.lastName]
+  return [this?.name?.firstName, this?.name?.middleName, this?.name?.lastName]
     .filter(Boolean) // Removes undefined values
     .join(" ");
 });
