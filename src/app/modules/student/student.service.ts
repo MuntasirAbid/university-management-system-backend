@@ -44,18 +44,17 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
     sort = query.sort as string;
   }
 
-  filterQuery = filterQuery.sort(sort);
+  const sortQuery = filterQuery.sort(sort);
 
-  // ✅ Convert limit to a number (Default: 10)
+  //limiting
   let limit = 1; // Default value
   if (query.limit) {
-    limit = Number(query.limit); // Ensure it's a number
+    limit = Number(query.limit);
   }
 
-  // ✅ Apply limit correctly
-  filterQuery = filterQuery.limit(limit);
+  const limitQuery = await sortQuery.limit(limit);
 
-  return await filterQuery;
+  return limitQuery;
 };
 
 const getSingleStudentFromDB = async (id: string) => {
