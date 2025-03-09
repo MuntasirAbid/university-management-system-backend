@@ -1,12 +1,11 @@
 import { model, Schema, Types } from "mongoose";
 import { TCourse, TPreRequisiteCourses } from "./course.interface";
-import { boolean } from "zod";
 
 const preRequisiteCoursesSchema = new Schema<TPreRequisiteCourses>({
   course: {
     type: Schema.Types.ObjectId,
+    ref: "Course",
   },
-
   isDeleted: {
     type: Boolean,
     default: false,
@@ -35,7 +34,7 @@ const courseSchema = new Schema<TCourse>({
     trim: true,
     required: true,
   },
-  preRequisiteCourses: { preRequisiteCoursesSchema },
+  preRequisiteCourses: [preRequisiteCoursesSchema],
 });
 
-const Course = model<TCourse>("Course", courseSchema);
+export const Course = model<TCourse>("Course", courseSchema);
