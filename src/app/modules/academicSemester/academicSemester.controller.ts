@@ -1,7 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
-import sendResponse from "../../utlis/sendResponse";
+import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
-import catchAsync from "../../utlis/catchAsync";
+import catchAsync from "../../utils/catchAsync";
 import { AcademicSemesterServices } from "./academicSemester.service";
 
 const createAcademicSemester = catchAsync(async (req, res) => {
