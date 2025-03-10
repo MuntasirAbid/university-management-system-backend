@@ -17,12 +17,10 @@ router.get("/", CourseControllers.getAllCourses);
 router.get("/:id", CourseControllers.getSingleCourse);
 router.delete("/:id", CourseControllers.deleteCourse);
 
-// router.patch(
-//   "/:facultyId",
-//   validateRequest(
-//     academicFacultyValidation.updateAcademicFacultyValidationSchema
-//   ),
-//   AcademicFacultyControllers.updateAcademicFaculty
-// );
+router.patch(
+  "/:id",
+  validateRequest(CourseValidations.updateCourseValidationSchema),
+  CourseControllers.updateCourse
+);
 
 export const CourseRoutes = router;
