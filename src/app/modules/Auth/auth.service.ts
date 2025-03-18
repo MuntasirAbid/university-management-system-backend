@@ -6,33 +6,34 @@ import bcrypt from "bcrypt";
 
 const loginUser = async (payload: TLoginUser) => {
   //check if the user is exist
-  const isUserExist = await User.findOne({ id: payload?.id });
 
-  if (!isUserExist) {
+  const user = await User.isUserExistByCustomId(payload.id);
+
+  if (!user) {
     throw new AppError(status.NOT_FOUND, "This user is not found");
   }
 
   //check if the user is already deleted
-  const isDeleted = isUserExist?.isDeleted;
+
+  const isDeleted = user?.isDeleted;
 
   if (isDeleted) {
     throw new AppError(status.FORBIDDEN, "This user is deleted");
   }
 
-  //check if the usr is blocked
-  const userStatus = isUserExist?.status;
+  // //check if the usr is blocked
+  const userStatus = user?.status;
 
   if (userStatus === "blocked") {
     throw new AppError(status.FORBIDDEN, "This user blocked!");
   }
 
-  //check if the password is correct
-  const isPasswordMatched = await bcrypt.compare(
-    payload?.password,
-    isUserExist?.password
-  );
-  console.log(isPasswordMatched);
-  //access Granted: send access token, refresh token
+  // //check if the password is correct
+  if (!(await User.isPasswordMatched(payload?.password, user.password))) {
+    throw new AppError(status.FORBIDDEN, "Password did not matched");
+  }
+  // access Granted: send access token, refresh token
+
   return {};
 };
 
