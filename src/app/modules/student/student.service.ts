@@ -77,7 +77,9 @@ const getAllStudentsFromDB = async (query: Record<string, unknown>) => {
   // return fieldQuery;
 
   const studentQuery = new QueryBuilder(
-    Student.find() //   .populate("admissionSemester")
+    Student.find()
+      .populate("admissionSemester")
+      .populate("user")
       .populate({
         path: "academicDepartment",
         populate: {
