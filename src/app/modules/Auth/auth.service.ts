@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import config from "../../config";
 import { createToken } from "./auth.utils";
-import catchAsync from "../../utils/catchAsync";
 
 const loginUser = async (payload: TLoginUser) => {
   //check if the user is exist
