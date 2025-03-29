@@ -18,8 +18,6 @@ const getSingleFaculty = catchAsync(async (req, res) => {
 const getAllFaculties = catchAsync(async (req, res) => {
   const result = await FacultyServices.getAllFacultiesFromDB(req.query);
 
-  console.log(req.cookies);
-
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
@@ -36,7 +34,7 @@ const updateFaculty = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "Faculty is updated succesfully",
+    message: "Faculty is updated successfully",
     data: result,
   });
 });
