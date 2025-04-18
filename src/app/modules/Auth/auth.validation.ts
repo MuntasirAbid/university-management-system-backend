@@ -26,6 +26,7 @@ const forgetPasswordValidationSchema = z.object({
     }),
   }),
 });
+
 const resetPasswordValidationSchema = z.object({
   body: z.object({
     id: z.string({
