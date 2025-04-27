@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/", StudentControllers.getAllStudents);
 router.get(
   "/:id",
-  auth("admin", "faculty"),
+  auth("admin", "faculty", "student"),
   StudentControllers.getSingleStudent
 );
 router.patch(
