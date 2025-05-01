@@ -43,19 +43,33 @@ const createAdmin = catchAsync(async (req, res) => {
   });
 });
 
-const getMe = catchAsync(async (req, res) => {
-  const token = req.headers.authorization;
+const changeStatus = catchAsync(async (req, res) => {
+  const id = req.params.id;
 
-  if (!token) {
-    throw new AppError(status.NOT_FOUND, "Token not found!");
-  }
-
-  const result = await userServices.getMe(token);
+  const result = await userServices.changeStatus(id, req.body);
 
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "Data retrieved successfully",
+    message: "Status is updated successfully",
+    data: result,
+  });
+});
+
+const getMe = catchAsync(async (req, res) => {
+  // const token = req.headers.authorization;
+
+  // if (!token) {
+  //   throw new AppError(status.NOT_FOUND, "Token not found!");
+  // }
+  const { userId, role } = req.user;
+
+  const result = await userServices.getMe(userId, role);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "User retrieved successfully",
     data: result,
   });
 });
@@ -65,4 +79,5 @@ export const UserControllers = {
   createFaculty,
   createAdmin,
   getMe,
+  changeStatus,
 };
