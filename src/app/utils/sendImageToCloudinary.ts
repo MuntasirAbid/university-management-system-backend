@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import config from "../config";
 import multer from "multer";
 import { resolve } from "path";
@@ -11,7 +11,10 @@ cloudinary.config({
   api_secret: config.cloudinary_api_secret,
 });
 
-export const sendImageToCloudinary = (imageName: string, path: string) => {
+export const sendImageToCloudinary = (
+  imageName: string,
+  path: string
+): Promise<UploadApiResponse> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader.upload(
       path,
@@ -19,14 +22,21 @@ export const sendImageToCloudinary = (imageName: string, path: string) => {
       function (error, result) {
         if (error) {
           reject(error);
+          return;
         }
+        if (!result) {
+          reject(new Error("No result from Cloudinary"));
+          return;
+        }
+
         resolve(result);
-        //delete a file asynchronously
+
+        // Delete local file
         fs.unlink(path, (err) => {
           if (err) {
-            reject(err);
+            console.error("Failed to delete file:", err);
           } else {
-            console.log("File is deleted");
+            console.log("File deleted");
           }
         });
       }
