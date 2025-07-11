@@ -18,6 +18,7 @@ import {
 } from "./user.utils";
 import { verifyToken } from "../Auth/auth.utils";
 import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
+import { TAdmin } from "../Admin/admin.interface";
 
 const createStudentIntoDB = async (
   file: any,
@@ -137,7 +138,11 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payload: TFaculty) => {
+const createAdminIntoDB = async (
+  file: any,
+  password: string,
+  payload: TAdmin
+) => {
   // create a user object
   const userData: Partial<TUser> = {};
 
@@ -155,6 +160,10 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
     //set  generated id
     userData.id = await generateAdminId();
 
+    const imageName = `${userData.id}${payload?.name?.firstName}`;
+    const path = file?.path;
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session });
 
@@ -165,6 +174,7 @@ const createAdminIntoDB = async (password: string, payload: TFaculty) => {
     // set id , _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
+    payload.profileImage = secure_url;
 
     // create a admin (transaction-2)
     const newAdmin = await Admin.create([payload], { session });

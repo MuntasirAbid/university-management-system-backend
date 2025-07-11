@@ -1,5 +1,9 @@
+import QueryBuilder from "../../builder/QueryBuilder";
 import AppError from "../../errors/AppError";
-import { academicSemesterNameCodeMapper } from "./academicSemester.const";
+import {
+  academicSemesterNameCodeMapper,
+  academicSemesterSearchableFields,
+} from "./academicSemester.const";
 import { TAcademicSemester } from "./academicSemester.interface";
 import { academicSemesterModel } from "./academicSemester.model";
 
@@ -13,9 +17,34 @@ const createAcademicSemesterIntoDB = async (payload: TAcademicSemester) => {
   return result;
 };
 
-const getAllAcademicSemesterFromDB = async () => {
-  const result = await academicSemesterModel.find();
-  return result;
+const getAllAcademicSemesterFromDB = async (query: Record<string, unknown>) => {
+  const academicSemesterQuery = new QueryBuilder(
+    academicSemesterModel.find(),
+    query
+  )
+    .search(academicSemesterSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await academicSemesterQuery.modelQuery;
+
+  // Total number of documents matching the filter (before pagination)
+  const total = await academicSemesterModel.countDocuments(
+    academicSemesterQuery.modelQuery.getFilter()
+  );
+
+  const pagination = academicSemesterQuery.getPaginationInfo();
+
+  return {
+    meta: {
+      total,
+      page: pagination?.page || 1,
+      limit: pagination?.limit || 10,
+    },
+    data: result,
+  };
 };
 
 const getSingleAcademicSemesterFromDB = async (id: string) => {

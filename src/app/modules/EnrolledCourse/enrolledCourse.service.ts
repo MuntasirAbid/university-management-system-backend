@@ -47,7 +47,7 @@ const createEnrolledCourseIntoDB = async (
 
   if (isStudentAlreadyEnrolled) {
     throw new AppError(httpStatus.CONFLICT, "Student is already enrolled !");
-  } 
+  }
 
   // check total credits exceeds maxCredit
   const course = await Course.findById(isOfferedCourseExists.course);
@@ -127,7 +127,7 @@ const createEnrolledCourseIntoDB = async (
     if (!result) {
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "Failed to enroll in this cousre !"
+        "Failed to enroll in this course !"
       );
     }
 

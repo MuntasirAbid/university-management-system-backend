@@ -16,11 +16,26 @@ const auth = (...requiredRoles: TUserRole[]) => {
       throw new AppError(status.UNAUTHORIZED, "Unauthorized access");
     }
 
-    //check if the is valid
-    const decoded = jwt.verify(
-      token,
-      config.jwt_access_secret as string
-    ) as JwtPayload;
+    //check if the token is valid
+    let decoded;
+    try {
+      decoded = jwt.verify(
+        token,
+        config.jwt_access_secret as string
+      ) as JwtPayload;
+    } catch (error: any) {
+      // Check for specific JWT error
+      if (error.name === "TokenExpiredError") {
+        throw new AppError(status.UNAUTHORIZED, "jwt expired");
+      }
+
+      if (error.name === "JsonWebTokenError") {
+        throw new AppError(status.UNAUTHORIZED, "Invalid token");
+      }
+
+      // Generic fallback
+      throw new AppError(status.UNAUTHORIZED, "Unauthorized");
+    }
 
     const { role, userId, iat } = decoded;
 
