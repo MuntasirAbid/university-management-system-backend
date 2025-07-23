@@ -28,22 +28,12 @@ const getAllAcademicSemesterFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
+  const meta = await academicSemesterQuery.countTotal();
   const result = await academicSemesterQuery.modelQuery;
 
-  // Total number of documents matching the filter (before pagination)
-  const total = await academicSemesterModel.countDocuments(
-    academicSemesterQuery.modelQuery.getFilter()
-  );
-
-  const pagination = academicSemesterQuery.getPaginationInfo();
-
   return {
-    meta: {
-      total,
-      page: pagination?.page || 1,
-      limit: pagination?.limit || 10,
-    },
-    data: result,
+    meta,
+    result,
   };
 };
 

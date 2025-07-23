@@ -4,12 +4,6 @@ class QueryBuilder<T> {
   public modelQuery: Query<T[], T>;
   public query: Record<string, unknown>;
 
-  public paginationInfo: {
-    page: number;
-    limit: number;
-    skip: number;
-  } | null = null;
-
   constructor(modelQuery: Query<T[], T>, query: Record<string, unknown>) {
     this.modelQuery = modelQuery;
     this.query = query;
@@ -56,15 +50,9 @@ class QueryBuilder<T> {
     const limit = Number(this?.query?.limit) || 10;
     const skip = (page - 1) * limit;
 
-    this.paginationInfo = { page, limit, skip };
-
     this.modelQuery = this.modelQuery.skip(skip).limit(limit);
 
     return this;
-  }
-
-  getPaginationInfo() {
-    return this.paginationInfo;
   }
 
   fields() {
@@ -74,6 +62,22 @@ class QueryBuilder<T> {
     this.modelQuery = this.modelQuery.select(fields);
 
     return this;
+  }
+
+  async countTotal() {
+    const totalQueries = this.modelQuery.getFilter();
+    const total = await this.modelQuery.model.countDocuments(totalQueries);
+
+    const page = Number(this?.query?.page) || 1;
+    const limit = Number(this?.query?.limit) || 10;
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages,
+    };
   }
 }
 
