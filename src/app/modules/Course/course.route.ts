@@ -25,6 +25,7 @@ router.get(
   auth("admin", "faculty", "student"),
   CourseControllers.getSingleCourse
 );
+
 router.delete("/:id", auth("admin"), CourseControllers.deleteCourse);
 
 router.patch(
