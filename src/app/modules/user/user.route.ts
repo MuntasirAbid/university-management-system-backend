@@ -14,7 +14,7 @@ const router = express.Router();
 //will call controller function
 router.post(
   "/create-student",
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -26,13 +26,19 @@ router.post(
 
 router.post(
   "/create-faculty",
-  auth(USER_ROLE.admin),
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin),
+  upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(createFacultyValidationSchema),
   UserControllers.createFaculty
 );
 
 router.post(
   "/create-admin",
+  auth(USER_ROLE.admin, USER_ROLE.superAdmin),
   upload.single("file"),
   (req: Request, res: Response, next: NextFunction) => {
     req.body = JSON.parse(req.body.data);
@@ -45,11 +51,15 @@ router.post(
 
 router.post(
   "/change-status/:id",
-  auth("admin"),
+  auth("admin", "superAdmin"),
   validateRequest(userValidation.changeStatusValidationSchema),
   UserControllers.changeStatus
 );
 
-router.get("/me", auth("student", "faculty", "admin"), UserControllers.getMe);
+router.get(
+  "/me",
+  auth("student", "faculty", "admin", "superAdmin"),
+  UserControllers.getMe
+);
 
 export const UserRoutes = router;
