@@ -23,7 +23,7 @@ router.get(
 
 router.patch(
   "/update-enrolled-course-marks",
-  auth("faculty"),
+  auth("faculty", "superAdmin", "admin"),
   validateRequest(
     EnrolledCourseValidations.updateEnrolledCourseMarksValidationZodSchema
   ),

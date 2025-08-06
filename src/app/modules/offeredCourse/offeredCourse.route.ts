@@ -2,21 +2,38 @@ import express from "express";
 import validateRequest from "../../middleware/validateRequest";
 import { offeredCOurseValidations } from "./offeredCourseValidation";
 import { OfferedCourseController } from "./offeredCourse.controller";
+import auth from "../../middleware/auth";
 
 const router = express.Router();
 
 router.post(
   "/create-offered-course",
+  auth("admin", "superAdmin"),
   validateRequest(offeredCOurseValidations.createOfferedCourseValidationSchema),
   OfferedCourseController.createOfferedCourse
 );
 
-router.get("/", OfferedCourseController.getAllOfferedCourses);
+router.get(
+  "/",
+  auth("admin", "superAdmin", "faculty"),
+  OfferedCourseController.getAllOfferedCourses
+);
 
-router.get("/:id", OfferedCourseController.getSingleOfferedCourses);
+router.get(
+  "/my-offered-courses",
+  auth("student"),
+  OfferedCourseController.getMyOfferedCourses
+);
+
+router.get(
+  "/:id",
+  auth("admin", "superAdmin", "faculty", "student"),
+  OfferedCourseController.getSingleOfferedCourses
+);
 
 router.patch(
   "/:id",
+  auth("admin", "superAdmin"),
   validateRequest(offeredCOurseValidations.updateOfferedCourseValidationSchema),
   OfferedCourseController.updateOfferedCOurse
 );

@@ -29,6 +29,18 @@ const getAllOfferedCourses = catchAsync(async (req, res) => {
   });
 });
 
+const getMyOfferedCourses = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const result = await OfferedCourseServices.getMyOfferedCoursesFromDB(userId);
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "Offered courses retrieved successfully !",
+    data: result,
+  });
+});
+
 const getSingleOfferedCourses = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = OfferedCourseServices.getSingleOfferedCourseFromDB(id);
@@ -59,6 +71,7 @@ const updateOfferedCOurse = catchAsync(async (req, res) => {
 export const OfferedCourseController = {
   createOfferedCourse,
   getAllOfferedCourses,
+  getMyOfferedCourses,
   getSingleOfferedCourses,
   updateOfferedCOurse,
 };
