@@ -16,7 +16,7 @@ router.post(
 );
 
 router.get(
-  "/get-enrolled-courses",
+  "/my-enrolled-courses",
   auth("student"),
   EnrolledCourseControllers.getEnrolledCourses
 );

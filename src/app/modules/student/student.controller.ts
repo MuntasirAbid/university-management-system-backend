@@ -12,7 +12,7 @@ const getAllStudents = catchAsync(async (req, res) => {
     success: true,
     message: "Student are retrieved successfully",
     meta: result.meta,
-    data: result,
+    data: result.result,
   });
 });
 

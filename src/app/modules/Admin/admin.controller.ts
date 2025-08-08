@@ -22,7 +22,8 @@ const getAllAdmins = catchAsync(async (req, res) => {
     statusCode: status.OK,
     success: true,
     message: "Admins are retrieved successfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 

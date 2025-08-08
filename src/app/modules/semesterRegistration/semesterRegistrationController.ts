@@ -12,6 +12,7 @@ const createSemesterRegistration = catchAsync(async (req, res) => {
     statusCode: status.OK,
     success: true,
     message: "Semester registration is created successfully",
+
     data: result,
   });
 });
@@ -25,7 +26,8 @@ const getAllSemesterRegistration = catchAsync(async (req, res) => {
     statusCode: status.OK,
     success: true,
     message: "Semester registration is retrieved successfully",
-    data: result,
+    meta: result.meta,
+    data: result.result,
   });
 });
 
